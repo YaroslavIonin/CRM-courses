@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.log
+*.pyc
+**/__pycache__/
+*.sql
+*.7z
+/pg_data
+server/config/migrations/*/*
+.env
+#/docker-compose.prod.yml
