@@ -5,7 +5,7 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
-# load_dotenv(dotenv_path='../../../.env')  # Load environment variables
+load_dotenv(dotenv_path='../../../.env')  # Load environment variables
 
 BASE_DIR = Path(__file__).parents[2]
 SECRET_KEY = 'django-insecure-v%r52)ezz13#aocuwgg+1)#(md2lyob^m^)d5f*4=iq-0iktg1'
@@ -19,7 +19,7 @@ SITE_ID = 1
 ##################################################################
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
+print(DEBUG)
 ##################################################################
 # Databases settings (with docker)
 ##################################################################
@@ -125,7 +125,7 @@ REST_FRAMEWORK = {
 # Custom user settings
 ##################################################################
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 
 ##################################################################
 # Default auto field settings
