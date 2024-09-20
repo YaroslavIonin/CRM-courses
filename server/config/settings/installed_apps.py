@@ -8,6 +8,7 @@ INSTALLED_APPS = [
     # 'django.contrib.sites',
     'rest_framework',
     'corsheaders',
+    'phonenumber_field',
 ]
 
 LOCAL_APPS = [

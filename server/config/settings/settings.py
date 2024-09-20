@@ -125,7 +125,7 @@ REST_FRAMEWORK = {
 # Custom user settings
 ##################################################################
 
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 ##################################################################
 # Default auto field settings
