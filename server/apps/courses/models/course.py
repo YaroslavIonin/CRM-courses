@@ -11,7 +11,6 @@ class Course(models.Model):
         decimal_places=2,
         verbose_name="Цена",
     )
-
     date_time = models.DateTimeField(
         verbose_name="Дата",
     )
