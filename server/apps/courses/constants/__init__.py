@@ -1,1 +1,1 @@
-from .errors import CourseErrors
+from .errors import CourseErrors, EnrollmentErrors
