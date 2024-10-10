@@ -5,5 +5,5 @@ from ..models import Course
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['title', 'date_time', 'price']
+    list_display = ['title', 'price']
     # fields = ['title', 'date_time', 'price']

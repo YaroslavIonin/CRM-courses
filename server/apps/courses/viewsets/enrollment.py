@@ -19,12 +19,10 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> Type[list[Enrollment]]:
         if self.request.user.is_operator:
             return Enrollment.objects.filter(
-                course__in=Course.objects.filter(
-                    created_by=self.request.user,
+                lesson__course__in=Course.objects.filter(
+                    author=self.request.user,
                 ))
 
         return Enrollment.objects.filter(
             user=self.request.user,
         )
-
-

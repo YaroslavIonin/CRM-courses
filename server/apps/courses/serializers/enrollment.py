@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from . import CourseSerializer
+from .lesson import LessonSerializer
 from ..models import Enrollment, Course
 from ...users.serializers import UserSerializer
 from ..constants.errors import EnrollmentErrors
@@ -8,13 +8,14 @@ from ..constants.errors import EnrollmentErrors
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    course = CourseSerializer()
+    lesson = LessonSerializer()
 
     class Meta:
         model = Enrollment
         fields = [
+            'id',
             'user',
-            'course',
+            'lesson',
         ]
 
 
@@ -22,30 +23,35 @@ class CreateEnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = [
-            'user',
-            'course',
+            'lesson',
         ]
 
-    def validate_course(self, course):
+    def create(self, validated_data: dict) -> Course:
         user = self.context['request'].user
         if user.is_operator:
-            if course not in Course.objects.filter(
-                created_by=user,
-            ):
-                raise serializers.ValidationError(
-                    EnrollmentErrors.COURSE_NOT_IN_OPERATORS_COURSES
-                )
+            raise serializers.ValidationError({
+                "error": EnrollmentErrors.OPERATOR_CANNOT_ENROLL_FOR_COURSE,
+            })
 
-        return course
+        validated_data['user'] = user
+        return super().create(validated_data)
 
-    def validate_user(self, user_for_enroll):
+    def validate_lesson(self, lesson):
         user = self.context['request'].user
-        if user.is_operator:
-            raise serializers.ValidationError(
-                EnrollmentErrors.OPERATOR_CANNOT_ENROLL_FOR_COURSE
+        try:
+            Enrollment.objects.get(
+                user=user,
+                lesson=lesson
             )
-
-        return user_for_enroll
+        except Enrollment.DoesNotExist:
+            if not lesson.is_available():
+                raise serializers.ValidationError(
+                    EnrollmentErrors.MAX_COUNT_ENROLLMENT_REACHED
+                )
+            return lesson
+        raise serializers.ValidationError(
+            EnrollmentErrors.LESSON_ALREADY_ENROLLED
+        )
 
     @property
     def data(self):

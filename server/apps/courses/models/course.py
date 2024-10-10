@@ -11,10 +11,7 @@ class Course(models.Model):
         decimal_places=2,
         verbose_name="Цена",
     )
-    date_time = models.DateTimeField(
-        verbose_name="Дата",
-    )
-    created_by = models.ForeignKey(
+    author = models.ForeignKey(
         'users.User',
         on_delete=models.SET_NULL,
         verbose_name="Создатель",
@@ -30,7 +27,6 @@ class Course(models.Model):
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
-        ordering = ['-date_time']
 
     def __str__(self):
         return self.title

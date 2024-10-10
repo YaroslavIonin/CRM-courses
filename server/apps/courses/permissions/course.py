@@ -8,4 +8,4 @@ class IsOperatorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-        return obj.created_by == request.user
+        return obj.author == request.user

@@ -9,3 +9,5 @@ class CourseErrors:
 class EnrollmentErrors:
     COURSE_NOT_IN_OPERATORS_COURSES: Final[str] = 'Оператор может записать пользователь только на свои курсы'
     OPERATOR_CANNOT_ENROLL_FOR_COURSE: Final[str] = 'Оператор не может записываться на курс'
+    MAX_COUNT_ENROLLMENT_REACHED: Final[str] = 'Достигнуто максимальное количество записей на урок'
+    LESSON_ALREADY_ENROLLED: Final[str] = 'Ученик уже записан на этот урок'

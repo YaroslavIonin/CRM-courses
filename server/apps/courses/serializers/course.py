@@ -1,7 +1,3 @@
-import datetime
-
-from django.utils.timezone import make_aware
-
 from rest_framework import serializers
 
 from apps.courses.models import Course
@@ -10,18 +6,18 @@ from apps.users.serializers import UserSerializer
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer()
+    author = UserSerializer()
 
     class Meta:
         model = Course
         fields = '__all__'
 
-    def validate_created_by(self, created_by):
-        if not created_by.is_operator:
+    def validate_author(self, author):
+        if not author.is_operator:
             raise serializers.ValidationError(
                 CourseErrors.USER_IS_NOT_OPERATOR
             )
-        return created_by
+        return author
 
 
 class CreateCourseSerializer(serializers.ModelSerializer):
@@ -30,7 +26,6 @@ class CreateCourseSerializer(serializers.ModelSerializer):
         fields = [
             'title',
             'price',
-            'date_time',
             'description',
         ]
 
@@ -40,16 +35,8 @@ class CreateCourseSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'user': CourseErrors.USER_IS_NOT_OPERATOR}
             )
-        validated_data['created_by'] = user
+        validated_data['author'] = user
         return super().create(validated_data)
-
-    def validate_date_time(self, date_time):
-        if date_time < make_aware(datetime.datetime.now()):
-            raise serializers.ValidationError(
-                CourseErrors.DATETIME_MUST_BE_IN_THE_FUTURE
-            )
-
-        return date_time
 
     @property
     def data(self):
@@ -64,7 +51,6 @@ class UpdateCourseSerializer(serializers.ModelSerializer):
         fields = [
             'title',
             'price',
-            'date_time',
             'description',
         ]
 
