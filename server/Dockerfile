@@ -1,11 +1,10 @@
 FROM python:3.10-slim
 
-RUN mkdir /server && apt-get update && apt-get install -y git libpq-dev postgresql-client
+RUN mkdir /server #&& apt-get update
 WORKDIR /server
 
-COPY ./server/pyproject.toml /server/
-COPY ./server/poetry.lock /server/
+COPY ./server/requirements.txt /server
 
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install
+RUN pip install -r ./requirements.txt
 
 COPY ./server /server
