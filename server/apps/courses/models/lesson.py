@@ -29,8 +29,12 @@ class Lesson(models.Model):
             lesson=self,
         ).count()
 
+    @property
+    def count_left_enrollments(self):
+        return self.max_count_enrollments - self.current_count_enrollments
+
     def is_available(self):
-        return self.current_count_enrollments < self.max_count_enrollments
+        return self.count_left_enrollments > 0
 
     class Meta:
         verbose_name = 'Урок'

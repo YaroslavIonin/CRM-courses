@@ -49,7 +49,17 @@ def get_course(base_domain, token, course_id):
     if response.status_code == 200:
         return {
             'status': 'success',
-            'course': response.json(),
+            'course': {
+                "id": response.json()['id'],
+                "author": {
+                    "id": response.json()['author']['id'],
+                    "username": response.json()['author']['username'],
+                    "phone_number": response.json()['author']['phone_number'],
+                },
+                "title": response.json()['title'],
+                "price": response.json()['price'],
+                "description": response.json()['description'],
+            },
         }
     return {
         'status': 'error',

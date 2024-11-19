@@ -10,6 +10,7 @@ class Enrollment(models.Model):
         to='courses.Lesson',
         on_delete=models.CASCADE,
         null=True,
+        related_name='enrollments',
     )
 
     class Meta:

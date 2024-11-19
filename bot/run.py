@@ -4,8 +4,12 @@ import logging
 import telebot
 from dotenv import load_dotenv
 
-from bot.bot_requests import get_user_summary, get_token, get_all_courses, get_course
-from bot.keyboards import phone_keyboard, main_keyboard, courses_keyboard
+from bot.bot_requests import get_user_summary, get_token, get_all_courses, get_course, get_lessons, create_enrollment, \
+    get_lesson_by_id
+from bot.bot_requests.enrollments import get_all_enrollments
+from bot.keyboards import phone_keyboard, main_keyboard, courses_keyboard, back_keyboard, agreement_enrollment, \
+    enrollments_keyboard
+from bot.keyboards.lessons import lessons_keyboard
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,7 +29,7 @@ user_data = {}
 def start(message):
     bot.send_message(
         chat_id=message.chat.id,
-        text="Привет! Я бот для записи на курсы???. Поделитесь своим контактом, чтобы авторизоваться в сервисе",
+        text="Привет! Я бот для записи на курсы\nПоделитесь своим контактом, чтобы авторизоваться в сервисе",
         reply_markup=phone_keyboard()
     )
 
@@ -92,10 +96,6 @@ def main_button_click(message):
                     "Выберите курс",
                     reply_markup=courses_keyboard(courses),
                 )
-                bot.register_next_step_handler(
-                    message,
-                    handle_course_click,
-                )
             else:
                 bot.send_message(
                     message.chat.id,
@@ -103,28 +103,164 @@ def main_button_click(message):
                 )
 
     elif message.text == "Мои записи":
-        # Здесь выполните второй запрос
-        bot.send_message(message.chat.id, "Вы выбрали Мои записи. Выполняется...")
-        # Добавьте код для выполнения запроса
+        response = get_all_enrollments(base_domain, user_data[message.chat.id])
+        if response['status'] == "error":
+            bot.send_message(message.chat.id, response['message'])
+        else:
+            enrollments = response['data']
+            if len(enrollments) :
+                bot.send_message(
+                    message.chat.id,
+                    "Ваши записи",
+                    reply_markup=enrollments_keyboard(enrollments),
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    "Нет записей"
+                )
 
 
 @bot.callback_query_handler(
     func=lambda call: call.data.startswith("course_")
 )
 def handle_course_click(call):
+    bot.delete_message(call.message.chat.id, call.message.message_id)
     course_id = call.data.split("_")[1]
-    response = get_course(base_domain, user_data[call.from_user.id], course_id)
+    response = get_course(
+        base_domain,
+        user_data[call.from_user.id],
+        course_id
+    )
     if response['status'] == "error":
         bot.send_message(
             call.message.chat.id,
             response['message'],
         )
     else:
-        course = response['course']
+        title = response['course']['title']
+        description = response['course']['description']
+        price = response['course']['price']
+        author = response['course']['author']['username']
+        res_course = '\n'.join([
+            title,
+            description,
+            f'\nЦена: {price}',
+            f'Автор: {author}',
+        ])
         bot.send_message(
             call.message.chat.id,
-            f"{course}"
+            res_course,
+            reply_markup=back_keyboard("Все курсы")
         )
+        get_lesson_handle(
+            call.message,
+            response['course']['id'],
+        )
+
+
+def get_lesson_handle(message, course_id):
+    response = get_lessons(
+        base_domain,
+        user_data[message.chat.id],
+        course_id
+    )
+    if response['status'] == "error":
+        bot.send_message(
+            message.chat.id,
+            response['message'],
+        )
+    else:
+        lessons = response['lessons']
+        if lessons:
+            keyboard = lessons_keyboard(lessons)
+            bot.send_message(
+                message.chat.id,
+                'Выберите свободное время для записи',
+                reply_markup=keyboard,
+            )
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Пока нет занятий этого курса.',
+            )
+
+
+@bot.callback_query_handler(
+    func=lambda call: call.data.startswith("lesson_")
+)
+def handle_lesson_click(call):
+    lesson_id = call.data.split("_")[1]
+    response = get_lesson_by_id(
+        base_domain,
+        user_data[call.from_user.id],
+        lesson_id
+    )
+    if response['status'] == "error":
+        bot.send_message(
+            call.message.chat.id,
+            response['message'],
+        )
+    else:
+        lesson = response['lesson']
+        if not bool(lesson['is_available']):
+            bot.send_message(
+                call.message.chat.id,
+                "Закончились свободные места. Выберите другое время.",
+                reply_markup=back_keyboard("Все курсы")
+            )
+        else:
+            text = f"""
+Запись на курс: {lesson['course']['title']}
+    Дата: {lesson['date']}
+    Время: {lesson['time_start']} - {lesson['time_finish']}
+    Стоимость: {lesson['course']['price']}
+            
+Вы хотите записаться на этот курс?
+            """
+            bot.send_message(
+                call.message.chat.id,
+                text,
+                reply_markup=agreement_enrollment(lesson['id'])
+            )
+
+
+@bot.callback_query_handler(
+    func=lambda call: call.data.startswith("agreement_") or call.data.startswith('disagreement_')
+)
+def agreements_buttons_click(call):
+    status, lesson_id = call.data.split("_")
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+    if status == "agreement":
+        response = create_enrollment(
+            base_domain,
+            user_data[call.message.chat.id],
+            lesson_id
+        )
+        if response['status'] == "error":
+            bot.send_message(
+                call.message.chat.id,
+                response['message'],
+                reply_markup=main_keyboard()
+            )
+        else:
+            # bot.delete_message(call.message.chat.id, call.message.message_id)
+            # bot.delete_message(call.message.chat.id, call.message.message_id)
+
+            enrollment = response['data']
+            text = f"""
+Вы записаны на курс: {enrollment['lesson']['course']['title']}
+    Дата: {enrollment['lesson']['date']}
+    Время: {enrollment['lesson']['time_start']} - {enrollment['lesson']['time_finish']}
+    Стоимость: {enrollment['lesson']['course']['price']}
+        
+За два часа до начала занятия мы вас уведомим.
+            """
+            bot.send_message(
+                call.message.chat.id,
+                text,
+                reply_markup=main_keyboard()
+            )
 
 
 if __name__ == '__main__':

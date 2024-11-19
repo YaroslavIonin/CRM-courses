@@ -14,6 +14,7 @@ class LessonSerializer(serializers.ModelSerializer):
             'date',
             'time_start',
             'time_finish',
+            'count_left_enrollments',
             'max_count_enrollments',
             'is_available',
             'course',
