@@ -9,3 +9,4 @@
 server/config/migrations/*/*
 .env
 #/docker-compose.prod.yml
+env
