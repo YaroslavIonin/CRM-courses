@@ -16,18 +16,25 @@ from bot.bot_requests import (
     get_enrollment_by_id,
     delete_enrollment_by_id, create_user,
 )
-from bot.constants import TextConst, input_password_text, get_course_text, get_pre_enrollment_text, get_enrollment_text, \
-    get_new_enrollment_text
+from bot.constants import (
+    TextConst,
+    get_course_text,
+    get_enrollment_text,
+    input_password_text,
+    get_pre_enrollment_text,
+    get_new_enrollment_text,
+)
 from bot.keyboards import (
     main_keyboard,
     phone_keyboard,
     lessons_keyboard,
     courses_keyboard,
+    register_keyboard,
     enrollments_keyboard,
+    use_tg_name_keyboard,
     cancel_enrollment_keyboard,
-    agreement_enrollment_keyboard, register_keyboard,
+    agreement_enrollment_keyboard,
 )
-from bot.keyboards.auth import use_tg_name_keyboard
 
 logging.basicConfig(
     level=logging.INFO,
