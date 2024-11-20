@@ -21,7 +21,7 @@ def get_user_summary(base_domain, phone_number):
         if len(users) != 1:
             return {
                 'status': 'error',
-                'message': 'Пользователь не определен'
+                'message': 'Пользователь не определен\nЗарегистрируйтесь в сервисе'
             }
 
         user = users[0]

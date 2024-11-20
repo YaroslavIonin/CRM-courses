@@ -1,5 +1,5 @@
 from .users import get_user_summary
-from .access_token import get_token
+from .auth import get_token, create_user
 
 from .courses import (
     get_course,

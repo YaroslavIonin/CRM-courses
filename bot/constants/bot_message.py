@@ -39,6 +39,9 @@ def get_enrollment_text(enrollment):
 class TextConst:
     HELLO_CONTACT = "Привет! Я бот для записи на курсы\nПоделитесь своим контактом, чтобы авторизоваться в сервисе"
 
+    GET_USERNAME = "Выберите никнейм"
+    GET_PASSWORD = "Придумайте и введите пароль"
+
     SELECT_COURSE = "Выберите интересующий курс"
     NO_COURSES = "Пока нет доступных курсов"
 
