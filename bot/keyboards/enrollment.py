@@ -1,31 +1,43 @@
 from telebot import types
 
+from bot.constants import EnrollmentButtonText, get_enrollment_text
 
-def agreement_enrollment(lesson_id):
+
+def agreement_enrollment_keyboard(lesson_id):
     keyboard = types.InlineKeyboardMarkup(
         row_width=2,
     )
     agreement = types.InlineKeyboardButton(
-        text="Подтвердить запись",
+        text=EnrollmentButtonText.AGREEMENT,
         callback_data=f"agreement_{lesson_id}"
     )
     disagreement = types.InlineKeyboardButton(
-        text="Отменить",
+        text=EnrollmentButtonText.DISAGREEMENT,
         callback_data=f"disagreement_{lesson_id}",
     )
     keyboard.add(disagreement, agreement)
     return keyboard
 
 
+def cancel_enrollment_keyboard(enrollment_id):
+    keyboard = types.InlineKeyboardMarkup()
+    cancel = types.InlineKeyboardButton(
+        text=EnrollmentButtonText.DELETE_ENROLLMENT,
+        callback_data=f"cancel_{enrollment_id}",
+    )
+    keyboard.add(cancel)
+    return keyboard
+
+
 def enrollments_keyboard(enrollments):
     keyboard = types.InlineKeyboardMarkup(
-        row_width=2,
+        row_width=5,
     )
-    for i, enrollment in enumerate(enrollments):
+    for enrollment in enrollments:
         keyboard.add(
             types.InlineKeyboardButton(
-                text='Запись',
-                callback_data=f"enrollment_{i}"
+                text=f"{get_enrollment_text(enrollment)}",  #######
+                callback_data=f"enrollment_{enrollment['id']}",
             )
         )
-        return keyboard
+    return keyboard

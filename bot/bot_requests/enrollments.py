@@ -60,3 +60,57 @@ def get_all_enrollments(base_domain, token):
         "status": "error",
         "message": response.text,
     }
+
+
+def get_enrollment_by_id(base_domain, token, enrollment_id):
+    """
+    Gets an enrollment by its ID.
+    """
+    url = base_domain + "/enrollments/" + enrollment_id
+    headers = {
+        "Authorization": "Bearer " + token
+    }
+    response = requests.get(
+        url,
+        headers=headers,
+    )
+    logging.info(f"""
+    Sending request to {response.url}
+    Response: {response.text}
+    """)
+    if response.status_code == 200:
+        return {
+            "status": "success",
+            "data": response.json(),
+        }
+    return {
+        "status": "error",
+        "message": response.text,
+    }
+
+
+def delete_enrollment_by_id(base_domain, token, enrollment_id):
+    """
+    Deletes an enrollment by its ID.
+    """
+    url = base_domain + "/enrollments/" + enrollment_id + "/"
+    headers = {
+        "Authorization": "Bearer " + token
+    }
+    response = requests.delete(
+        url,
+        headers=headers,
+    )
+    logging.info(f"""
+    Sending request to {response.url}
+    Response: {response.text}
+    """)
+    if response.status_code == 204:
+        return {
+            "status": "success",
+            "message": "Вы отменили занятие",
+        }
+    return {
+        "status": "error",
+        "message": response.text,
+    }

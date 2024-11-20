@@ -8,7 +8,6 @@ def courses_keyboard(courses):
             types.InlineKeyboardButton(
                 text=course['title'],
                 callback_data=f"course_{course['id']}",
-
             )
         )
     return keyboard
