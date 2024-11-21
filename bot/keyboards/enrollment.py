@@ -1,6 +1,6 @@
 from telebot import types
 
-from bot.constants import EnrollmentButtonText, get_enrollment_text
+from constants import EnrollmentButtonText, get_enrollment_text
 
 
 def agreement_enrollment_keyboard(lesson_id):

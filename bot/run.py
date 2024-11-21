@@ -4,7 +4,7 @@ import logging
 import telebot
 from dotenv import load_dotenv
 
-from bot.bot_requests import (
+from bot_requests import (
     get_token,
     get_course,
     create_user,
@@ -17,7 +17,7 @@ from bot.bot_requests import (
     get_enrollment_by_id,
     delete_enrollment_by_id,
 )
-from bot.constants import (
+from constants import (
     TextConst,
     get_course_text,
     get_enrollment_text,
@@ -25,7 +25,7 @@ from bot.constants import (
     get_pre_enrollment_text,
     get_new_enrollment_text,
 )
-from bot.keyboards import (
+from keyboards import (
     main_keyboard,
     phone_keyboard,
     lessons_keyboard,
@@ -46,7 +46,7 @@ logging.basicConfig(
 load_dotenv('../.env')
 
 bot = telebot.TeleBot(os.environ.get('YOUR_BOT_TOKEN'))
-base_domain = 'http://0.0.0.0:8000/api/v1'
+base_domain = 'http://server:8000/api/v1'
 
 user_data = {}
 

@@ -1,6 +1,6 @@
 from telebot import types
 
-from bot.constants import MainButtonText
+from constants import MainButtonText
 
 
 def main_keyboard():

@@ -1,6 +1,6 @@
 from telebot import types
 
-from bot.constants import AuthButtonText
+from constants import AuthButtonText
 
 
 def phone_keyboard(is_one_time=True):
