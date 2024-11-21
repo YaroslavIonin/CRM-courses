@@ -7,4 +7,9 @@ from .bot_message import (
     get_new_enrollment_text,
 )
 
-from .keyboards_text import EnrollmentButtonText, get_enrollment_text
+from .keyboards_text import (
+    MainButtonText,
+    AuthButtonText,
+    get_enrollment_text,
+    EnrollmentButtonText,
+)

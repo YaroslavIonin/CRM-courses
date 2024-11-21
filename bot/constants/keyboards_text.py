@@ -9,3 +9,14 @@ class EnrollmentButtonText:
     DISAGREEMENT = "Назад"
 
     DELETE_ENROLLMENT = "Отменить запись"
+
+
+class AuthButtonText:
+    SEND_CONTACT = "Отправить контакт"
+
+    REGISTER = "Зарегистрироваться"
+
+
+class MainButtonText:
+    ALL_COURSES = "Все курсы"
+    MY_ENROLLMENTS = "Мои записи"

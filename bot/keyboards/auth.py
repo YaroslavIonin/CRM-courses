@@ -1,5 +1,7 @@
 from telebot import types
 
+from bot.constants import AuthButtonText
+
 
 def phone_keyboard(is_one_time=True):
     markup = types.ReplyKeyboardMarkup(
@@ -8,7 +10,7 @@ def phone_keyboard(is_one_time=True):
     )
     markup.add(
         types.KeyboardButton(
-            'Отправить контакт',
+            AuthButtonText.SEND_CONTACT,
             request_contact=True,
         ),
     )
@@ -20,7 +22,7 @@ def register_keyboard(phone_number):
     )
     keyboard.add(
         types.InlineKeyboardButton(
-            text='Зарегистрироваться',
+            AuthButtonText.REGISTER,
             callback_data=f'register_{phone_number}',
         )
     )

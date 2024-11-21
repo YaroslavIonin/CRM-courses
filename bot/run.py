@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from bot.bot_requests import (
     get_token,
     get_course,
+    create_user,
     get_lessons,
     get_all_courses,
     get_lesson_by_id,
@@ -14,7 +15,7 @@ from bot.bot_requests import (
     create_enrollment,
     get_all_enrollments,
     get_enrollment_by_id,
-    delete_enrollment_by_id, create_user,
+    delete_enrollment_by_id,
 )
 from bot.constants import (
     TextConst,
@@ -135,9 +136,10 @@ def second_step_register_handler(call):
 
 
 def register(message, user_name, phone_number):
-    bot.delete_message(message.chat.id, message.message_id)
-    bot.delete_message(message.chat.id, message.message_id - 1)
-
+    bot.delete_messages(
+        message.chat.id,
+        [message.message_id, message.message_id - 1]
+    )
     response = create_user(
         base_domain,
         username=user_name,
@@ -159,20 +161,7 @@ def register(message, user_name, phone_number):
             text=response['message'],
             reply_markup=main_keyboard(),
         )
-
-        response = get_token(base_domain, user, message.text)
-        if response['status'] == "error":
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=response['message'],
-            )
-        else:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=response['message'],
-                reply_markup=main_keyboard(),
-            )
-            user_data[message.chat.id]['token'] = response['token']
+        get_token_response(message, user, message.text)
 
 
 def handle_password(message, user):
@@ -180,6 +169,10 @@ def handle_password(message, user):
     bot.delete_message(message.chat.id, message.message_id)
 
     # Отправляем запрос на сервер для получения JWT токена
+    get_token_response(message, user, password)
+
+
+def get_token_response(message, user, password):
     response = get_token(base_domain, user, password)
     if response['status'] == "error":
         bot.send_message(

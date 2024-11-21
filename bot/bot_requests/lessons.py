@@ -53,9 +53,9 @@ def get_lesson_by_id(base_domain, token, lesson_id):
         headers=headers,
     )
     logging.info(f"""
-            Sending request to {response.url}
-            Response: {response.text}
-            """)
+    Sending request to {response.url}
+    Response: {response.text}
+    """)
     if response.status_code == 200:
         return {
             'status': 'success',
