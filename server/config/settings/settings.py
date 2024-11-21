@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).parents[2]
 SECRET_KEY = 'django-insecure-v%r52)ezz13#aocuwgg+1)#(md2lyob^m^)d5f*4=iq-0iktg1'
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost', 'server']
 SITE_ID = 1
 
 ##################################################################
