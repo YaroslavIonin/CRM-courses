@@ -6,7 +6,9 @@
 *.sql
 *.7z
 /pg_data
-server/config/migrations/*/*
+
 .env
-#/docker-compose.prod.yml
 env
+
+server/config/migrations/*/*
+/docker-compose.dev.yml
