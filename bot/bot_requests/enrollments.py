@@ -8,10 +8,7 @@ def create_enrollment(base_domain, token, lesson_id):
     Creates an enrollment for the given lesson.
     """
     if not token:
-        return {
-            'status': 'error',
-            'message': 'Token is required'
-        }
+        return {"status": "error", "message": "Token is required"}
 
     url = base_domain + "/enrollments/"
     data = {
@@ -26,12 +23,14 @@ def create_enrollment(base_domain, token, lesson_id):
         headers=headers,
     )
 
-    logging.info(f"""
+    logging.info(
+        f"""
     Creates an enrollment for the given lesson.
     
     Sending request to {response.url}
     Response: {response.text}
-    """)
+    """
+    )
 
     if response.status_code == 201:
         return {
@@ -50,26 +49,23 @@ def get_all_enrollments(base_domain, token):
     Gets all enrollments.
     """
     if not token:
-        return {
-            'status': 'error',
-            'message': 'Token is required'
-        }
+        return {"status": "error", "message": "Token is required"}
 
     url = base_domain + "/enrollments"
-    headers = {
-        "Authorization": "Bearer " + token
-    }
+    headers = {"Authorization": "Bearer " + token}
     response = requests.get(
         url=url,
         headers=headers,
     )
 
-    logging.info(f"""
+    logging.info(
+        f"""
     Gets all enrollments.
     
     Sending request to {response.url}
     Response: {response.text}
-    """)
+    """
+    )
 
     if response.status_code == 200:
         return {
@@ -87,26 +83,23 @@ def get_enrollment_by_id(base_domain, token, enrollment_id):
     Gets an enrollment by its ID.
     """
     if not token:
-        return {
-            'status': 'error',
-            'message': 'Token is required'
-        }
+        return {"status": "error", "message": "Token is required"}
 
     url = base_domain + "/enrollments/" + enrollment_id
-    headers = {
-        "Authorization": "Bearer " + token
-    }
+    headers = {"Authorization": "Bearer " + token}
     response = requests.get(
         url=url,
         headers=headers,
     )
 
-    logging.info(f"""
+    logging.info(
+        f"""
     Gets an enrollment by its ID.
     
     Sending request to {response.url}
     Response: {response.text}
-    """)
+    """
+    )
 
     if response.status_code == 200:
         return {
@@ -124,10 +117,7 @@ def delete_enrollment_by_id(base_domain, token, enrollment_id):
     Deletes an enrollment by its ID.
     """
     if not token:
-        return {
-            'status': 'error',
-            'message': 'Token is required'
-        }
+        return {"status": "error", "message": "Token is required"}
 
     url = base_domain + "/enrollments/" + enrollment_id + "/"
     headers = {
@@ -138,12 +128,14 @@ def delete_enrollment_by_id(base_domain, token, enrollment_id):
         headers=headers,
     )
 
-    logging.info(f"""
+    logging.info(
+        f"""
     Deletes an enrollment by its ID.
      
     Sending request to {response.url}
     Response: {response.text}
-    """)
+    """
+    )
 
     if response.status_code == 204:
         return {

@@ -40,41 +40,41 @@ from keyboards import (
 
 logging.basicConfig(
     level=logging.INFO,
-    filename='bot.log',
-    filemode='w',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename="bot.log",
+    filemode="w",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
-load_dotenv('../.env')
+load_dotenv("../.env")
 
-bot = telebot.TeleBot(os.environ.get('TELEGRAM_TOKEN'))
-base_domain = 'http://server:8000/api/v1'
+bot = telebot.TeleBot(os.environ.get("TELEGRAM_TOKEN"))
+BASE_DOMAIN = "http://server:8000/api/v1"
 
 user_data = {}
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def start(message):
     bot.send_message(
         chat_id=message.chat.id,
         text=TextConst.HELLO_CONTACT,
-        reply_markup=phone_keyboard(False)
+        reply_markup=phone_keyboard(False),
     )
 
 
-@bot.message_handler(content_types=['contact'])
+@bot.message_handler(content_types=["contact"])
 def handle_contact(message):
     phone_number = message.contact.phone_number
-    logging.info(f'User: {message.contact}')
+    logging.info(f"User: {message.contact}")
 
-    response = get_user_summary(base_domain, phone_number)
-    if response['status'] == 'error':
-        if response['message'].startswith('Пользователь не определен'):
+    response = get_user_summary(BASE_DOMAIN, phone_number)
+    if response["status"] == "error":
+        if response["message"].startswith("Пользователь не определен"):
             keyboard = register_keyboard(phone_number)
-            text = response['message']
+            text = response["message"]
         else:
             keyboard = phone_keyboard(False)
-            text = response['message']
+            text = response["message"]
 
         bot.send_message(
             chat_id=message.chat.id,
@@ -82,22 +82,16 @@ def handle_contact(message):
             reply_markup=keyboard,
         )
     else:
-        user = response['user']
+        user = response["user"]
         user_data[message.chat.id] = user
         bot.send_message(
             chat_id=message.chat.id,
-            text=input_password_text(user['username']),
+            text=input_password_text(user["username"]),
         )
-        bot.register_next_step_handler(
-            message,
-            handle_password,
-            user
-        )
+        bot.register_next_step_handler(message, handle_password, user)
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("register_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("register_"))
 def first_step_register_handler(call):
     full_name = call.from_user.full_name
     username = call.from_user.username
@@ -112,13 +106,11 @@ def first_step_register_handler(call):
             username=username,
             full_name=full_name,
             phone_number=phone_number,
-        )
+        ),
     )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("name_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("name_"))
 def second_step_register_handler(call):
     username = call.data.split("_")[1]
     phone_number = call.data.split("_")[2]
@@ -138,29 +130,26 @@ def second_step_register_handler(call):
 
 
 def register(message, user_name, phone_number):
-    bot.delete_messages(
-        message.chat.id,
-        [message.message_id, message.message_id - 1]
-    )
+    bot.delete_messages(message.chat.id, [message.message_id, message.message_id - 1])
     response = create_user(
-        base_domain,
+        BASE_DOMAIN,
         username=user_name,
         phone_number=phone_number,
-        password=message.text
+        password=message.text,
     )
 
-    if response['status'] == "error":
+    if response["status"] == "error":
         bot.send_message(
             chat_id=message.chat.id,
-            text=response['message'],
+            text=response["message"],
         )
     else:
-        user = response['user']
+        user = response["user"]
         user_data[message.chat.id] = user
 
         bot.send_message(
             chat_id=message.chat.id,
-            text=response['message'],
+            text=response["message"],
             reply_markup=main_keyboard(),
         )
         get_token_response(message, user, message.text)
@@ -175,39 +164,31 @@ def handle_password(message, user):
 
 
 def get_token_response(message, user, password):
-    response = get_token(base_domain, user, password)
-    if response['status'] == "error":
+    response = get_token(BASE_DOMAIN, user, password)
+    if response["status"] == "error":
         bot.send_message(
             chat_id=message.chat.id,
-            text=response['message'],
+            text=response["message"],
         )
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text=response['message'],
+            text=response["message"],
             reply_markup=main_keyboard(),
         )
-        user_data[message.chat.id]['token'] = response['token']
-        get_or_create_user_chat(base_domain, response['token'], message.chat.id)
+        user_data[message.chat.id]["token"] = response["token"]
+        get_or_create_user_chat(BASE_DOMAIN, response["token"], message.chat.id)
 
 
-@bot.message_handler(
-    func=lambda message: message.text in ["Все курсы", "Мои записи"]
-)
+@bot.message_handler(func=lambda message: message.text in ["Все курсы", "Мои записи"])
 def main_button_click(message):
     if message.text == "Все курсы":
 
-        response = get_all_courses(
-            base_domain,
-            user_data[message.chat.id]['token']
-        )
-        if response['status'] == "error":
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=response['message']
-            )
+        response = get_all_courses(BASE_DOMAIN, user_data[message.chat.id]["token"])
+        if response["status"] == "error":
+            bot.send_message(chat_id=message.chat.id, text=response["message"])
         else:
-            courses = response['courses']
+            courses = response["courses"]
             if courses:
                 bot.send_message(
                     chat_id=message.chat.id,
@@ -221,14 +202,11 @@ def main_button_click(message):
                 )
 
     elif message.text == "Мои записи":
-        response = get_all_enrollments(
-            base_domain,
-            user_data[message.chat.id]['token']
-        )
-        if response['status'] == "error":
-            bot.send_message(message.chat.id, response['message'])
+        response = get_all_enrollments(BASE_DOMAIN, user_data[message.chat.id]["token"])
+        if response["status"] == "error":
+            bot.send_message(message.chat.id, response["message"])
         else:
-            enrollments = response['data']
+            enrollments = response["data"]
             print(len(enrollments))
             if len(enrollments):
                 bot.send_message(
@@ -243,47 +221,37 @@ def main_button_click(message):
                 )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("course_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("course_"))
 def handle_course_click(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     course_id = call.data.split("_")[1]
-    response = get_course(
-        base_domain,
-        user_data[call.from_user.id]['token'],
-        course_id
-    )
-    if response['status'] == "error":
+    response = get_course(BASE_DOMAIN, user_data[call.from_user.id]["token"], course_id)
+    if response["status"] == "error":
         bot.send_message(
             chat_id=call.message.chat.id,
-            text=response['message'],
+            text=response["message"],
         )
     else:
         bot.send_message(
             chat_id=call.message.chat.id,
-            text=get_course_text(response['course']),
-            reply_markup=main_keyboard()
+            text=get_course_text(response["course"]),
+            reply_markup=main_keyboard(),
         )
         get_lesson_handle(
             call.message,
-            response['course']['id'],
+            response["course"]["id"],
         )
 
 
 def get_lesson_handle(message, course_id):
-    response = get_lessons(
-        base_domain,
-        user_data[message.chat.id]['token'],
-        course_id
-    )
-    if response['status'] == "error":
+    response = get_lessons(BASE_DOMAIN, user_data[message.chat.id]["token"], course_id)
+    if response["status"] == "error":
         bot.send_message(
             chat_id=message.chat.id,
-            text=response['message'],
+            text=response["message"],
         )
     else:
-        lessons = response['lessons']
+        lessons = response["lessons"]
         if lessons:
             keyboard = lessons_keyboard(lessons)
             bot.send_message(
@@ -298,100 +266,87 @@ def get_lesson_handle(message, course_id):
             )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("lesson_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("lesson_"))
 def handle_lesson_click(call):
     lesson_id = call.data.split("_")[1]
     response = get_lesson_by_id(
-        base_domain,
-        user_data[call.from_user.id]['token'],
-        lesson_id
+        BASE_DOMAIN, user_data[call.from_user.id]["token"], lesson_id
     )
-    if response['status'] == "error":
+    if response["status"] == "error":
         bot.send_message(
             chat_id=call.message.chat.id,
-            text=response['message'],
+            text=response["message"],
         )
     else:
-        lesson = response['lesson']
+        lesson = response["lesson"]
         bot.send_message(
             chat_id=call.message.chat.id,
             text=get_pre_enrollment_text(lesson),
-            reply_markup=agreement_enrollment_keyboard(lesson['id'])
+            reply_markup=agreement_enrollment_keyboard(lesson["id"]),
         )
 
 
 @bot.callback_query_handler(
-    func=lambda call: call.data.startswith("agreement_") or call.data.startswith('disagreement_')
+    func=lambda call: call.data.startswith("agreement_")
+    or call.data.startswith("disagreement_")
 )
 def agreements_buttons_click(call):
     status, lesson_id = call.data.split("_")
     bot.delete_message(call.message.chat.id, call.message.message_id)
     if status == "agreement":
         response = create_enrollment(
-            base_domain,
-            user_data[call.message.chat.id]['token'],
-            lesson_id
+            BASE_DOMAIN, user_data[call.message.chat.id]["token"], lesson_id
         )
-        if response['status'] == "error":
+        if response["status"] == "error":
             bot.send_message(
                 chat_id=call.message.chat.id,
-                text=response['message'],
-                reply_markup=main_keyboard()
+                text=response["message"],
+                reply_markup=main_keyboard(),
             )
         else:
-            enrollment = response['data']
+            enrollment = response["data"]
             bot.send_message(
                 chat_id=call.message.chat.id,
                 text=get_new_enrollment_text(enrollment),
-                reply_markup=main_keyboard()
+                reply_markup=main_keyboard(),
             )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("enrollment_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("enrollment_"))
 def enrollments_buttons_click(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     enrollment_id = call.data.split("_")[1]
     response = get_enrollment_by_id(
-        base_domain,
-        user_data[call.message.chat.id]['token'],
-        enrollment_id
+        BASE_DOMAIN, user_data[call.message.chat.id]["token"], enrollment_id
     )
-    if response['status'] == "error":
+    if response["status"] == "error":
         bot.send_message(
             chat_id=call.message.chat.id,
-            text=response['message'],
-            reply_markup=main_keyboard()
+            text=response["message"],
+            reply_markup=main_keyboard(),
         )
     else:
-        enrollment = response['data']
+        enrollment = response["data"]
         bot.send_message(
             chat_id=call.message.chat.id,
             text=get_enrollment_text(enrollment),
-            reply_markup=cancel_enrollment_keyboard(enrollment['id']),
+            reply_markup=cancel_enrollment_keyboard(enrollment["id"]),
         )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data.startswith("cancel_")
-)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("cancel_"))
 def cancel_enrollment_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     enrollment_id = call.data.split("_")[1]
     response = delete_enrollment_by_id(
-        base_domain,
-        user_data[call.message.chat.id]['token'],
-        enrollment_id
+        BASE_DOMAIN, user_data[call.message.chat.id]["token"], enrollment_id
     )
     bot.send_message(
         chat_id=call.message.chat.id,
-        text=response['message'],
-        reply_markup=main_keyboard()
+        text=response["message"],
+        reply_markup=main_keyboard(),
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     bot.polling(none_stop=True)

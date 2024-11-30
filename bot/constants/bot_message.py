@@ -1,3 +1,6 @@
+import dataclasses
+
+
 def input_password_text(username):
     return f"Здравствуйте, {username}! Введите пароль:"
 
@@ -28,7 +31,7 @@ def get_new_enrollment_text(enrollment):
     """
 
 
-def get_enrollment_text(enrollment):
+def get_enrollment_text_new(enrollment):
     return f"""Запись на курс: {enrollment['lesson']['course']['title']}
     Дата: {enrollment['lesson']['date']}
     Время: {enrollment['lesson']['time_start']} - {enrollment['lesson']['time_finish']}
@@ -36,8 +39,12 @@ def get_enrollment_text(enrollment):
     """
 
 
+@dataclasses.dataclass
 class TextConst:
-    HELLO_CONTACT = "Привет! Я бот для записи на курсы\nПоделитесь своим контактом, чтобы авторизоваться в сервисе"
+    HELLO_CONTACT = (
+        "Привет! Я бот для записи на курсы"
+        "\nПоделитесь своим контактом, чтобы авторизоваться в сервисе"
+    )
 
     GET_USERNAME = "Выберите никнейм"
     GET_PASSWORD = "Придумайте и введите пароль"

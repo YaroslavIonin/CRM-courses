@@ -6,7 +6,7 @@ def courses_keyboard(courses):
     for course in courses:
         keyboard.add(
             types.InlineKeyboardButton(
-                text=course['title'],
+                text=course["title"],
                 callback_data=f"course_{course['id']}",
             )
         )

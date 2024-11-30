@@ -1,6 +1,6 @@
 from telebot import types
 
-from constants import EnrollmentButtonText, get_enrollment_text
+from constants import EnrollmentButtonText, get_enrollment_text_new
 
 
 def agreement_enrollment_keyboard(lesson_id):
@@ -36,7 +36,7 @@ def enrollments_keyboard(enrollments):
     for enrollment in enrollments:
         keyboard.add(
             types.InlineKeyboardButton(
-                text=f"{get_enrollment_text(enrollment)}",  #######
+                text=f"{get_enrollment_text_new(enrollment)}",
                 callback_data=f"enrollment_{enrollment['id']}",
             )
         )
