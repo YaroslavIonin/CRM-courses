@@ -12,3 +12,4 @@ env
 
 server/config/migrations/*/*
 /docker-compose.dev.yml
+/docker-compose.test.yml
