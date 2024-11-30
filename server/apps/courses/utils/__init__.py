@@ -1,0 +1,1 @@
+from .func_for_celery import planed_enrollment_notify

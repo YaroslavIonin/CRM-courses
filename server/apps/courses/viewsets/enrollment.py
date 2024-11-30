@@ -3,6 +3,7 @@ from typing import Type
 from rest_framework import viewsets, serializers
 
 from apps.courses.models import Course, Enrollment
+from apps.courses.utils import planed_enrollment_notify
 from apps.courses.serializers import CreateEnrollmentSerializer, EnrollmentSerializer
 
 
@@ -25,4 +26,11 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
         return Enrollment.objects.filter(
             user=self.request.user,
+        )
+
+    def perform_create(self, serializer: serializers.ModelSerializer):
+        enrollment = serializer.save()
+        planed_enrollment_notify(
+            enrollment=enrollment,
+            user_id=self.request.user.id,
         )
