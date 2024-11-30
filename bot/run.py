@@ -16,6 +16,7 @@ from bot_requests import (
     get_all_enrollments,
     get_enrollment_by_id,
     delete_enrollment_by_id,
+    get_or_create_user_chat,
 )
 from constants import (
     TextConst,
@@ -187,6 +188,7 @@ def get_token_response(message, user, password):
             reply_markup=main_keyboard(),
         )
         user_data[message.chat.id]['token'] = response['token']
+        get_or_create_user_chat(base_domain, response['token'], message.chat.id)
 
 
 @bot.message_handler(

@@ -1,5 +1,6 @@
 from .users import get_user_summary
 from .auth import get_token, create_user
+from .user_chat import get_or_create_user_chat
 
 from .courses import (
     get_course,
