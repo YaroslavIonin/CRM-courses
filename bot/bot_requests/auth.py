@@ -4,6 +4,9 @@ import requests
 
 
 def get_token(base_domain, user, password):
+    """
+    Gets jwt token
+    """
     logging.info(f"""
     User phone_number: {user['phone_number']}
     User password: {password}
@@ -17,12 +20,14 @@ def get_token(base_domain, user, password):
             "password": password
         }
     )
+    logging.info(f"""
+    Gets jwt token.
+    
+    Sending request to {response.url}
+    Response: {response.text}
+    """)
 
     if response.status_code == 200:
-        logging.info(f"""
-        Sending request to {response.url}
-        Response: {response.text}
-        """)
         return {
             "status": "success",
             "message": f"Вы успешно вошли, {user['username']} ({user['phone_number']})!",

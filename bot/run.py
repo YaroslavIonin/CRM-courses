@@ -41,11 +41,12 @@ logging.basicConfig(
     level=logging.INFO,
     filename='bot.log',
     filemode='w',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 
 load_dotenv('../.env')
 
-bot = telebot.TeleBot(os.environ.get('YOUR_BOT_TOKEN'))
+bot = telebot.TeleBot(os.environ.get('TELEGRAM_TOKEN'))
 base_domain = 'http://server:8000/api/v1'
 
 user_data = {}

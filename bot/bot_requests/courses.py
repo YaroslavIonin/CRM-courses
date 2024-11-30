@@ -12,13 +12,23 @@ def get_all_courses(base_domain, token):
             'status': 'error',
             'message': 'Token is required'
         }
+
     url = base_domain + '/courses'
-    headers = {'Authorization': 'Bearer ' + token}
-    response = requests.get(url, headers=headers)
+    headers = {
+        'Authorization': 'Bearer ' + token,
+    }
+    response = requests.get(
+        url=url,
+        headers=headers,
+    )
+
     logging.info(f"""
+    Get all courses.
+    
     Sending request to {response.url}
     Response: {response.text}
     """)
+
     if response.status_code == 200:
         return {
             'status': 'success',
@@ -26,7 +36,7 @@ def get_all_courses(base_domain, token):
         }
     return {
         'status': 'error',
-        'message': response.text
+        'message': response.text,
     }
 
 
@@ -39,13 +49,23 @@ def get_course(base_domain, token, course_id):
             'status': 'error',
             'message': 'Token is required'
         }
+
     url = base_domain + f'/courses/{course_id}'
-    headers = {'Authorization': 'Bearer ' + token}
-    response = requests.get(url, headers=headers)
+    headers = {
+        'Authorization': 'Bearer ' + token,
+    }
+    response = requests.get(
+        url=url,
+        headers=headers,
+    )
+
     logging.info(f"""
+    Get a course
+    
     Sending request to {response.url}
     Response: {response.text}
     """)
+
     if response.status_code == 200:
         return {
             'status': 'success',
