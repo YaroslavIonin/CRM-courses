@@ -6,8 +6,7 @@ from ..models import Lesson
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     list_display = [
-        'course__title',
-        'course__author',
+        'course',
         'date',
         'time_start',
         'time_finish',
