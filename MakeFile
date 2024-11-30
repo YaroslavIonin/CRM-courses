@@ -1,4 +1,4 @@
-run:
+start:
 	@echo "Запуск проекта..."
 	docker-compose up --build -d
 	@echo "Создаются миграции..."
@@ -20,3 +20,6 @@ test:
 # Создание суперпользователя
 createadmin:
 	docker-compose exec server python3 manage.py createsuperuser
+
+lint:
+	pylint bot/ server/ --rcfile=.pylintrc
