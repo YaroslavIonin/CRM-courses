@@ -10,6 +10,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'phonenumber_field',
     'django_filters',
+    'django_celery_results',
     'drf_yasg',
 ]
 
