@@ -1,0 +1,22 @@
+run:
+	@echo "Запуск проекта..."
+	docker-compose up --build -d
+	@echo "Создаются миграции..."
+	docker-compose exec server python manage.py makemigrations
+	@echo "Выполняются миграции..."
+	docker-compose exec server python manage.py migrate
+	@echo "Миграции выполнены!"
+	@echo "Проект запущен!"
+
+stop:
+	@echo "Остановка проекта..."
+	docker-compose stop
+	@echo "Проект остановлен"
+
+# Запуск тестов
+test:
+	docker-compose run --rm server python manage.py test --verbosity=2
+
+# Создание суперпользователя
+createadmin:
+	docker-compose exec server python3 manage.py createsuperuser
