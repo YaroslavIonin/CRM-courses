@@ -27,7 +27,30 @@ services:
 
   db:
     image: postgres:14-alpine
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+
+  celery-worker:
+    build:
+      context: ./
+      dockerfile: ./server/Dockerfile
+    command: celery -A config worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - server
+      - redis
+
+  celery-beat:
+    build:
+      context: ./
+      dockerfile: ./server/Dockerfile
+    command: celery -A config beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - server
+      - redis
+
+  redis:
+    image: redis:7.0.5-alpine
+    env_file:
+      - .env
