@@ -34,7 +34,7 @@
     ```
 - В корне проекта создайте файл .env:
     ```shell
-    cp .env.example .env
+    cp .envexample .env
     ```
 - Укажите ваш TELEGRAM_TOKEN в файле .env
     ```text
